@@ -1,0 +1,16 @@
+{
+  "name": "kayfa-tusna",
+  "version": "1.0.0",
+  "description": "منصة كيف تُصنع؟ لاكتشاف المصانع الوطنية وتنظيم زياراتها",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["factories", "tours", "saudi", "manufacturing", "heritage", "education"],
+  "author": "كيف تُصنع",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
