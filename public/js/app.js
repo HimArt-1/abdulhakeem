@@ -181,7 +181,18 @@ function switchView(viewName, params = {}) {
 
   // Handle specific view rendering
   if (viewName === 'discover') {
-    renderDiscoveryView();
+    // Static view
+  } else if (viewName === 'experience') {
+    // Check which tab is active
+    const browseTab = document.getElementById('experience-browse-factories');
+    if (browseTab && !browseTab.classList.contains('d-none')) {
+      renderDiscoveryView();
+    } else {
+      renderVisitsView();
+      renderPassportView();
+    }
+  } else if (viewName === 'understand' || viewName === 'create' || viewName === 'join') {
+    // Static views for now
   } else if (viewName === 'factory') {
     if (params.factoryId) {
       state.selectedFactory = state.factories.find(f => f.id === params.factoryId) || state.factories[0];
@@ -189,9 +200,15 @@ function switchView(viewName, params = {}) {
     }
     renderFactoryView();
   } else if (viewName === 'visits') {
-    renderVisitsView();
+    // Legacy fallback: Redirect to experience tab
+    switchView('experience');
+    switchExperienceTab('my-passport');
+    return;
   } else if (viewName === 'passport') {
-    renderPassportView();
+    // Legacy fallback: Redirect to experience tab
+    switchView('experience');
+    switchExperienceTab('my-passport');
+    return;
   } else if (viewName === 'factory-dashboard') {
     renderFactoryDashboard();
   } else if (viewName === 'admin-dashboard') {
@@ -200,6 +217,30 @@ function switchView(viewName, params = {}) {
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+// ==========================================================================
+// Experience Tab Switching
+// ==========================================================================
+window.switchExperienceTab = function(tabId) {
+  // Update Tab Buttons (only those inside view-experience)
+  const experienceSection = document.getElementById('view-experience');
+  if (!experienceSection) return;
+  
+  experienceSection.querySelectorAll('.visits-header-tabs .tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tabId);
+  });
+
+  // Toggle Content Panels
+  document.getElementById('experience-browse-factories').classList.toggle('d-none', tabId !== 'browse-factories');
+  document.getElementById('experience-my-passport').classList.toggle('d-none', tabId !== 'my-passport');
+
+  if (tabId === 'browse-factories') {
+    renderDiscoveryView();
+  } else if (tabId === 'my-passport') {
+    renderVisitsView();
+    renderPassportView();
+  }
+};
 
 // ==========================================================================
 // Role Switching (Persona switcher)
@@ -544,7 +585,7 @@ function renderVisitsView() {
         <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
         <h3 class="heading-card mb-2">لا توجد زيارات في هذا القسم</h3>
         <p class="text-sm text-muted mb-3">ابدأ رحلتك الآن واكتشف المصانع الوطنية وخطوط إنتاجها الفريدة.</p>
-        <button class="btn btn-copper" onclick="switchView('discover')">استكشف المصانع المتاحة</button>
+        <button class="btn btn-copper" onclick="switchView('experience'); switchExperienceTab('browse-factories')">استكشف المصانع المتاحة</button>
       </div>
     `;
     return;
@@ -652,7 +693,7 @@ function renderVisitsView() {
             <div>
               🎖️ <strong>تمت الزيارة بنجاح ومُنح الختم في جواز الاكتشاف!</strong>
             </div>
-            <button class="btn btn-outline btn-sm" onclick="switchView('passport')">افتح جوازك</button>
+            <button class="btn btn-outline btn-sm" onclick="switchView('experience'); switchExperienceTab('my-passport')">افتح جوازك</button>
           </div>
         ` : ''}
 
