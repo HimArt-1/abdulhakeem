@@ -117,7 +117,7 @@ const API = {
 document.addEventListener('DOMContentLoaded', async () => {
   setupEventListeners();
   await loadInitialData();
-  renderApp();
+  if (state.currentView === 'experience') renderApp();
 });
 
 async function loadInitialData() {
@@ -163,11 +163,12 @@ function updateNotificationBadge() {
 // ==========================================================================
 function switchView(viewName, params = {}) {
   state.currentView = viewName;
-
-  // Update navigation button active state
-  document.querySelectorAll('.nav-link-item, .mobile-nav-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.view === viewName);
-  });
+  if (viewName !== 'discover') {
+    window.FactoryDistrict.leave();
+    window.Factory3D.leaveExcept();
+  }
+  document.body.classList.toggle('industrial-edition', viewName === 'discover');
+  if (viewName !== 'experience') updateMainNavigation();
 
   // Hide all views
   document.querySelectorAll('.view-panel').forEach(panel => {
@@ -180,17 +181,9 @@ function switchView(viewName, params = {}) {
   }
 
   // Handle specific view rendering
-  if (viewName === 'discover') {
-    // Static view
-  } else if (viewName === 'experience') {
-    // Check which tab is active
-    const browseTab = document.getElementById('experience-browse-factories');
-    if (browseTab && !browseTab.classList.contains('d-none')) {
-      renderDiscoveryView();
-    } else {
-      renderVisitsView();
-      renderPassportView();
-    }
+  if (viewName === 'experience') {
+    const activeTab = document.querySelector('#view-experience .tab-btn.active');
+    switchExperienceTab(params.experienceTab || activeTab?.dataset.tab || 'browse-factories');
   } else if (viewName === 'understand' || viewName === 'create' || viewName === 'join') {
     // Static views for now
   } else if (viewName === 'factory') {
@@ -201,13 +194,11 @@ function switchView(viewName, params = {}) {
     renderFactoryView();
   } else if (viewName === 'visits') {
     // Legacy fallback: Redirect to experience tab
-    switchView('experience');
-    switchExperienceTab('my-passport');
+    switchView('experience', { experienceTab: 'my-passport' });
     return;
   } else if (viewName === 'passport') {
     // Legacy fallback: Redirect to experience tab
-    switchView('experience');
-    switchExperienceTab('my-passport');
+    switchView('experience', { experienceTab: 'my-passport' });
     return;
   } else if (viewName === 'factory-dashboard') {
     renderFactoryDashboard();
@@ -215,7 +206,54 @@ function switchView(viewName, params = {}) {
     renderAdminDashboard();
   }
 
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (params.scroll !== false) {
+    districtNavigation++;
+    if (districtPanel(location.hash.slice(1))) {
+      history.pushState(null, '', location.pathname + location.search);
+    }
+    if (viewName === 'discover') showDistrictPanel('factory-district');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+}
+
+let districtNavigation = 0;
+
+function districtPanel(id) {
+  if (id === 'factory-district' || Object.hasOwn(window.factoryTourDefinitions, id)) {
+    return document.getElementById(id);
+  }
+  return null;
+}
+
+function showDistrictPanel(id) {
+  const returning = id === 'factory-district' && districtPanel(id).classList.contains('d-none');
+  document.querySelectorAll('#factory-district, #view-discover .roastery-section').forEach(panel => {
+    panel.classList.toggle('d-none', panel.id !== id);
+  });
+  if (id !== 'factory-district') window.FactoryDistrict.leave();
+  if (returning) window.FactoryDistrict.resetView();
+  window.Factory3D.leaveExcept(id);
+}
+
+function showDistrictLocation(focus = false) {
+  const panel = districtPanel(location.hash.slice(1)) || districtPanel('factory-district');
+  showDistrictPanel(panel.id);
+  const walking = history.state?.factoryWalk === true;
+  if (focus) panel.querySelector('h1, h2').focus({ preventScroll: true });
+  panel.scrollIntoView({ block: 'start', behavior: 'instant' });
+  if (panel.id !== 'factory-district') window.Factory3D.openTour(panel.id, walking);
+  else if (walking) window.FactoryDistrict.returnToStreet(history.state.from);
+  else window.FactoryDistrict.resetView();
+}
+
+function updateMainNavigation(experienceTab) {
+  document.querySelectorAll('.nav-link-item, .mobile-nav-btn').forEach(link => {
+    const active = link.dataset.view === state.currentView &&
+      (state.currentView !== 'experience' || link.dataset.experienceTab === experienceTab);
+    link.classList.toggle('active', active);
+    if (active) link.setAttribute('aria-current', 'page');
+    else link.removeAttribute('aria-current');
+  });
 }
 
 // ==========================================================================
@@ -225,6 +263,7 @@ window.switchExperienceTab = function(tabId) {
   // Update Tab Buttons (only those inside view-experience)
   const experienceSection = document.getElementById('view-experience');
   if (!experienceSection) return;
+  if (state.currentView === 'experience') updateMainNavigation(tabId);
   
   experienceSection.querySelectorAll('.visits-header-tabs .tab-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.tab === tabId);
@@ -1314,10 +1353,49 @@ function setupEventListeners() {
   document.querySelectorAll('[data-view]').forEach(elem => {
     elem.addEventListener('click', (e) => {
       e.preventDefault();
-      const targetView = elem.dataset.view;
-      switchView(targetView);
+      switchView(elem.dataset.view, { experienceTab: elem.dataset.experienceTab });
     });
   });
+
+  document.querySelectorAll('[data-tour-entry]').forEach(link => {
+    link.addEventListener('click', async event => {
+      const id = link.hash.slice(1);
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || !districtPanel(id)) return;
+      event.preventDefault();
+      const request = ++districtNavigation;
+      if (link.closest('#factory-district') && id !== 'factory-district') {
+        await window.FactoryDistrict.approach(id);
+      }
+      if (request !== districtNavigation) return;
+      if (state.currentView !== 'discover') switchView('discover', { scroll: false });
+      if (location.hash !== link.hash) history.pushState(null, '', link.hash);
+      else if (history.state?.factoryWalk) history.replaceState(null, '', link.hash);
+      showDistrictLocation(true);
+    });
+  });
+
+  window.addEventListener('factory-door', event => {
+    const { id, from } = event.detail;
+    const source = districtPanel(from);
+    if (!source || !districtPanel(id) || source.classList.contains('d-none')) return;
+    const request = ++districtNavigation;
+    source.classList.add('walk-crossing');
+    const duration = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 285;
+    setTimeout(() => {
+      source.classList.remove('walk-crossing');
+      if (request !== districtNavigation || state.currentView !== 'discover' || !source.querySelector('.is-walking')) return;
+      history.pushState({ factoryWalk: true, from }, '', '#' + id);
+      showDistrictLocation(true);
+    }, duration);
+  });
+
+  window.addEventListener('popstate', () => {
+    if (!districtPanel(location.hash.slice(1)) && state.currentView !== 'discover') return;
+    districtNavigation++;
+    if (state.currentView !== 'discover') switchView('discover', { scroll: false });
+    showDistrictLocation();
+  });
+  if (districtPanel(location.hash.slice(1))) showDistrictLocation();
 
   // Role Switcher Modal Triggers
   const roleSelectorBtn = document.getElementById('role-selector-btn');

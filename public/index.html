@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>كيف تُصنع؟ | منصة اكتشاف المصانع الوطنية وتنظيم زياراتها</title>
   <meta name="description" content="كل منتج له حكاية… ادخلها. استكشف كواليس التصنيع السعودي، اطلب جولات ميدانية، واكتسب أختام المعرفة في جواز الاكتشاف." />
 
@@ -11,10 +11,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
+  <link rel="icon" href="/images/factory-mark.svg" type="image/svg+xml" />
+
   <!-- Stylesheet -->
   <link rel="stylesheet" href="/css/style.css" />
 </head>
-<body>
+<body class="industrial-edition">
 
   <!-- ==========================================================================
        Top Site Header
@@ -24,7 +26,7 @@
       
       <!-- Brand & Tagline -->
       <a href="#" class="brand-wrapper" data-view="discover">
-        <div class="brand-logo-icon">ك</div>
+        <div class="brand-logo-icon" aria-hidden="true"><svg viewBox="0 0 32 32" width="25" height="25" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 25V15l8-5v6l8-6v6l8-5v14H4Z"/><path d="M8 12V5h4v5M9 20h3m4 0h3m4 0h2"/></svg></div>
         <div class="brand-text-col">
           <span class="brand-name">
             كيف تُصنع؟
@@ -33,28 +35,11 @@
         </div>
       </a>
 
-      <!-- Desktop Nav Links -->
-      <nav class="desktop-nav">
-        <button class="nav-link-item active" data-view="discover">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          اكتشف
-        </button>
-        <button class="nav-link-item" data-view="experience">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          جرّب
-        </button>
-        <button class="nav-link-item" data-view="understand">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-          افهم
-        </button>
-        <button class="nav-link-item" data-view="create">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          اصنع
-        </button>
-        <button class="nav-link-item" data-view="join">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          انضم
-        </button>
+      <nav class="desktop-nav" aria-label="التنقل الرئيسي">
+        <button class="nav-link-item active" data-view="discover" aria-current="page">الرئيسية</button>
+        <button class="nav-link-item" data-view="experience" data-experience-tab="browse-factories">المصانع</button>
+        <a class="nav-link-item" href="#factory-district" data-tour-entry>حي المصانع</a>
+        <button class="nav-link-item" data-view="experience" data-experience-tab="my-passport">زياراتي</button>
       </nav>
 
       <!-- Header Actions: Role Switcher, Onboarding CTA, Notifications -->
@@ -62,7 +47,7 @@
         <!-- Role Switcher Pill -->
         <button class="role-badge-selector" id="role-selector-btn" title="تبديل الصلاحية بين زائر، مدير مصنع، ومدير منصة">
           <span class="role-dot"></span>
-          <span id="current-role-label">الزائر: سلطان العبدالله</span>
+          <span>الحساب</span><span id="current-role-label" class="visually-hidden">الزائر: سلطان العبدالله</span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
         </button>
 
@@ -85,26 +70,97 @@
   <!-- ==========================================================================
        Main Application Views Container
        ========================================================================== -->
-  <main class="container mt-3 mb-3">
+  <main class="container mt-3 mb-3" id="main-content">
 
-    <!-- 1. Discover View (اكتشف) - Educational Content -->
-    <section id="view-discover" class="view-panel">
-      <!-- Hero Header -->
-      <div class="hero-section text-center">
-        <h1 class="heading-hero">اكتشف الصناعة السعودية</h1>
-        <p class="hero-subtitle">
-          تاريخ عريق، ومستقبل طموح. تعرف على قصة الصناعة في المملكة وكيف نساهم في صناعة الغد.
-        </p>
-      </div>
+    <section id="view-discover" class="view-panel industrial-home" aria-label="حي المصانع والجولات الافتراضية">
+      <section class="district-hero" id="factory-district" aria-labelledby="cover-title">
+        <header class="district-heading">
+          <div>
+            <p class="industrial-kicker"><span>٠١</span> خريطة تفاعلية · مدينة صناعية افتراضية</p>
+            <h1 id="cover-title" tabindex="-1">حيّ <em>المصانع.</em></h1>
+          </div>
+          <p>انزل إلى الشارع، وامشِ بين المباني حتى تصل إلى باب المحمصة أو مدار.</p>
+        </header>
 
-      <!-- Educational Content Area -->
-      <div class="card p-3 mb-3" style="background: var(--bg-ivory-warm);">
-        <h2 class="heading-section">لماذا الصناعة؟</h2>
-        <p class="text-muted mt-2">الصناعة هي قلب الاقتصاد النابض، ومن خلالها نحول المواد الخام إلى منتجات تلامس حياتنا اليومية وتصدر للعالم بعبارة "صنع في السعودية".</p>
-        <div class="mt-3">
-          <button class="btn btn-copper" onclick="switchView('experience')">ابدأ تجربتك الآن واكتشف المصانع &rarr;</button>
+        <div class="district-stage">
+          <div class="district-toolbar">
+            <p><span class="district-live-dot"></span><span id="district-view-label">المخطط العام</span></p>
+            <div class="district-controls" role="group" aria-label="عرض حي المصانع">
+              <button type="button" class="walk-toggle" id="district-walk" aria-pressed="false">ابدأ التجوّل</button>
+              <button type="button" data-district-light="dusk" aria-pressed="true">مساء</button>
+              <button type="button" data-district-light="day" aria-pressed="false">نهار</button>
+              <button type="button" id="district-reset" aria-label="إعادة زاوية المخطط" title="إعادة زاوية المخطط">↺</button>
+            </div>
+          </div>
+          <div class="district-viewport" id="district-viewport">
+            <div class="district-placeholder" aria-hidden="true">
+              <svg viewBox="0 0 600 360" fill="none">
+                <path d="M36 39h528v282H36zM36 116h528M36 231h528M289 39v282m22-282v282" stroke="currentColor" stroke-width="1" />
+                <path d="M111 133h122v75H111zM366 127h131v86H366z" stroke="currentColor" stroke-width="2" />
+                <path d="M54 53h132v38H54zm149 0h70v38h-70zm129 0h99v38h-99zm113 0h104v38H445zM55 252h128v50H55zm144 0h74v50h-74zm134 0h94v50h-94zm109 0h106v50H442z" stroke="currentColor" />
+                <path d="M302 45v270M47 221h507" stroke="currentColor" stroke-dasharray="5 8" />
+              </svg>
+            </div>
+            <div class="district-pins" id="district-pins" aria-label="مداخل المصانع">
+              <a class="district-pin pin-roastery" href="#roastery-tour" data-tour-entry hidden><span>٠١</span> المحمصة <b aria-hidden="true">↖</b></a>
+              <a class="district-pin pin-madar" href="#madar-tour" data-tour-entry hidden><span>٠٢</span> مدار <b aria-hidden="true">↖</b></a>
+            </div>
+            <p class="district-status" id="district-status" role="status">جارٍ تجهيز الحي…</p>
+            <div class="district-map-note" aria-hidden="true"><b>↑</b><span>شمال</span></div>
+          </div>
+          <div class="district-destinations" aria-label="المصانع في الحي">
+            <a href="#roastery-tour" data-tour-entry>
+              <span class="district-destination-number">٠١</span>
+              <span><strong>المحمصة</strong><small>القهوة والتحميص</small></span>
+              <span class="district-destination-arrow" aria-hidden="true">↖</span>
+            </a>
+            <a href="#madar-tour" data-tour-entry>
+              <span class="district-destination-number">٠٢</span>
+              <span><strong>مصنع مدار</strong><small>المركبات الكهربائية</small></span>
+              <span class="district-destination-arrow" aria-hidden="true">↖</span>
+            </a>
+          </div>
         </div>
-      </div>
+        <p class="district-tip"><span class="studio-mouse-hint">اسحب لتدوير المخطط · استخدم <kbd>Ctrl</kbd> مع العجلة للتقريب</span><span class="studio-touch-hint">استخدم إصبعين لتدوير المخطط أو تقريبه</span></p>
+      </section>
+
+      <section class="roastery-section d-none" id="roastery-tour" aria-labelledby="roastery-title">
+        <a class="district-return" href="#factory-district" data-tour-entry><span aria-hidden="true">→</span> العودة إلى حي المصانع</a>
+        <header class="roastery-heading">
+          <div>
+            <p class="industrial-kicker"><span>٠١ / ٠٥</span> جولة افتراضية</p>
+            <h2 id="roastery-title" tabindex="-1">داخل المحمصة</h2>
+          </div>
+          <p>اختر محطة لتقترب من معدّاتها وتعرف ما يحدث فيها، أو تابع الجولة بالترتيب من الاستلام إلى التعبئة.</p>
+        </header>
+
+        <div class="studio-mount"></div>
+
+        <div class="roastery-footnote">
+          <p>المشهد نموذج تعليمي تصوّري لمراحل تحميص القهوة.</p>
+          <button class="industrial-button secondary" data-view="experience" data-experience-tab="browse-factories">تصفّح المصانع والزيارات <span aria-hidden="true">←</span></button>
+        </div>
+      </section>
+      <section class="roastery-section madar-tour d-none" id="madar-tour" aria-labelledby="madar-title">
+        <a class="district-return" href="#factory-district" data-tour-entry><span aria-hidden="true">→</span> العودة إلى حي المصانع</a>
+        <header class="roastery-heading">
+          <div>
+            <p class="industrial-kicker"><span>٠٢</span> جولة افتراضية · المركبات الكهربائية</p>
+            <h2 id="madar-title" tabindex="-1">مصنع مدار</h2>
+          </div>
+          <p>خط تجميع في خمس محطات. شاهد المكبس وأذرع اللحام والرافعة العلوية أثناء العمل، ثم رافق المركبة إلى بوابة الفحص.</p>
+        </header>
+        <div class="studio-mount"></div>
+        <div class="roastery-footnote">
+          <p>مصنع تصوّري يشرح مراحل مختارة من تجميع المركبات الكهربائية.</p>
+          <a class="industrial-button secondary" href="#roastery-tour" data-tour-entry>جولة محمصة القهوة <span aria-hidden="true">↑</span></a>
+        </div>
+      </section>
+      <nav class="industrial-links" aria-label="المزيد عن الصناعة">
+        <button data-view="understand">الفرص الصناعية</button>
+        <button data-view="create">ريادة الأعمال</button>
+        <button data-view="join">مجتمع الصناعة</button>
+      </nav>
     </section>
 
     <!-- 2. Experience View (جرّب) - The factories, map, and virtual tours -->
@@ -116,18 +172,22 @@
           <span>🛡️</span>
           <span>منصة تجريبية وطنية • المصانع الخمسة معتمدة ببيانات نموذجية واقعية</span>
         </div>
-        <h1 class="heading-hero">جرّب الصناعة عن قرب</h1>
+        <h1 class="heading-hero">دليل المصانع والزيارات</h1>
         <p class="hero-subtitle">
-          زر المصانع حقيقياً أو افتراضياً، واحصل على جواز الاكتشاف.
+          اختر مصنعًا، تعرّف على محطات جولته، واطّلع على طرق الزيارة.
         </p>
       </div>
 
       <div class="visits-header-tabs">
-        <button class="tab-btn active" data-tab="browse-factories" onclick="switchExperienceTab('browse-factories')">خريطة المصانع والمحاكاة الافتراضية</button>
-        <button class="tab-btn" data-tab="my-passport" onclick="switchExperienceTab('my-passport')">جواز الاكتشاف وزياراتي</button>
+        <button class="tab-btn active" data-tab="browse-factories" onclick="switchExperienceTab('browse-factories')">المصانع</button>
+        <button class="tab-btn" data-tab="my-passport" onclick="switchExperienceTab('my-passport')">زياراتي وجواز الاكتشاف</button>
       </div>
 
       <div id="experience-browse-factories" class="experience-tab-content active">
+        <a class="directory-tour-link" href="#madar-tour" data-tour-entry>
+          <span>جولة افتراضية <strong>مصنع مدار للمركبات الكهربائية</strong></span>
+          <span aria-hidden="true">←</span>
+        </a>
         <!-- Five Interactive Product Journey Showcase Cards -->
         <div class="products-showcase-wrapper mt-3">
           <div class="section-subhead">
@@ -302,9 +362,14 @@
 
     <!-- Factory Detailed Tour View (Sub-view of Experience) -->
     <section id="view-factory" class="view-panel d-none">
-      <button class="btn btn-ghost btn-sm mb-2" onclick="switchView('experience'); switchExperienceTab('browse-factories')">
-        &rarr; العودة للخريطة
-      </button>
+      <div class="d-flex gap-1 mb-3">
+        <button class="btn btn-ghost btn-sm" onclick="switchView('discover')">
+          &rarr; العودة للمصنع ثلاثي الأبعاد
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="switchView('experience'); switchExperienceTab('browse-factories')">
+          تصفح خريطة المصانع
+        </button>
+      </div>
       <div id="factory-detail-content"></div>
     </section>
 
@@ -362,26 +427,22 @@
   <!-- ==========================================================================
        Mobile Bottom Navigation Bar
        ========================================================================== -->
-  <nav class="mobile-bottom-nav">
-    <button class="mobile-nav-btn active" data-view="discover">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <span>اكتشف</span>
+  <nav class="mobile-bottom-nav" aria-label="التنقل الرئيسي">
+    <button class="mobile-nav-btn active" data-view="discover" aria-current="page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m3 10 9-7 9 7v10H3zM9 20v-6h6v6"/></svg>
+      <span>الرئيسية</span>
     </button>
-    <button class="mobile-nav-btn" data-view="experience">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-      <span>جرّب</span>
+    <button class="mobile-nav-btn" data-view="experience" data-experience-tab="browse-factories">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 20V10l6-4v6l6-5v5l6-5v13H3Z"/></svg>
+      <span>المصانع</span>
     </button>
-    <button class="mobile-nav-btn" data-view="understand">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-      <span>افهم</span>
-    </button>
-    <button class="mobile-nav-btn" data-view="create">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-      <span>اصنع</span>
-    </button>
-    <button class="mobile-nav-btn" data-view="join">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      <span>انضم</span>
+    <a class="mobile-nav-btn" href="#factory-district" data-tour-entry>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m12 3 9 5v8l-9 5-9-5V8zM3 8l9 5 9-5m-9 5v8"/></svg>
+      <span>الجولة</span>
+    </a>
+    <button class="mobile-nav-btn" data-view="experience" data-experience-tab="my-passport">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6m-6 4h6m-6 4h4"/></svg>
+      <span>زياراتي</span>
     </button>
   </nav>
 
@@ -728,6 +789,82 @@
 
   <!-- Toast Notification Container -->
   <div class="toast-container" id="toast-container"></div>
+
+  <template id="factory-studio-template">
+    <div class="roastery-studio">
+      <div class="studio-toolbar">
+        <div class="studio-label"><i></i> نموذج تفاعلي <span>·</span> <span class="studio-name"></span></div>
+        <div class="studio-controls">
+          <button type="button" class="walk-toggle" data-studio-action="walk" aria-pressed="false">تجوّل بالداخل</button>
+          <button type="button" data-studio-action="reset">نظرة عامة</button>
+          <button type="button" data-studio-action="fullscreen" aria-pressed="false">ملء الشاشة</button>
+          <details class="studio-settings">
+            <summary>إعدادات المشهد</summary>
+            <div class="studio-settings-panel">
+              <fieldset>
+                <legend>الإضاءة</legend>
+                <div class="studio-setting-buttons">
+                  <button type="button" data-time-preset="golden" aria-pressed="true">دافئة</button>
+                  <button type="button" data-time-preset="day" aria-pressed="false">نهار</button>
+                  <button type="button" data-time-preset="night" aria-pressed="false">ليل</button>
+                </div>
+              </fieldset>
+              <button type="button" data-studio-action="orbit" aria-pressed="false">دوران تلقائي</button>
+              <button type="button" data-studio-action="wireframe" aria-pressed="false">عرض الهيكل الشبكي</button>
+              <button type="button" data-studio-action="weather" aria-pressed="false">المطر</button>
+              <button type="button" data-studio-action="motion" aria-pressed="false">إيقاف حركة المعدات</button>
+              <button type="button" data-studio-action="audio" aria-pressed="false">الصوت المحيطي</button>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="studio-stations" role="group"></div>
+
+      <div class="studio-grid">
+        <div class="studio-visual">
+          <div class="studio-canvas" role="group">
+            <div class="studio-poster" aria-hidden="true"></div>
+            <p class="studio-message" role="status" hidden></p>
+            <div class="studio-hotspots"></div>
+          </div>
+          <p class="studio-hint" hidden><span class="studio-mouse-hint">اسحب للتدوير · استخدم <kbd>Ctrl</kbd> مع العجلة للتقريب</span><span class="studio-touch-hint">استخدم إصبعين لتدوير المجسّم أو تقريبه</span></p>
+        </div>
+        <div class="studio-readout">
+          <div class="studio-copy" aria-live="polite" aria-atomic="true">
+            <p class="industrial-kicker studio-station-number"></p>
+            <h3 class="studio-station-title"></h3>
+            <p class="studio-station-description"></p>
+            <p class="studio-detail" hidden></p>
+          </div>
+          <div class="studio-step-actions">
+            <button type="button" data-studio-action="previous" hidden>السابق</button>
+            <button type="button" data-studio-action="next">ابدأ الجولة <span aria-hidden="true">←</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="factory-walk-hud">
+    <div class="walk-hud" hidden>
+      <div class="walk-location"><i></i><span class="walk-place"></span></div>
+      <span class="walk-reticle" aria-hidden="true"></span>
+      <button class="walk-pad" type="button" tabindex="-1" aria-label="عصا الحركة باللمس"><span class="walk-stick"></span></button>
+      <div class="walk-help">
+        <p class="walk-desktop-hint"><kbd>W A S D</kbd> أو الأسهم للمشي · اسحب للنظر · <kbd>E</kbd> للباب</p>
+        <p class="walk-touch-hint">العصا للمشي · اسحب المشهد للنظر</p>
+        <button type="button" class="walk-lock">تحكم بالفأرة</button>
+      </div>
+      <button type="button" class="walk-interact" hidden></button>
+    </div>
+  </template>
+
+  <!-- The tour controller loads each model on demand. -->
+  <script src="/js/factory-walk.js"></script>
+  <script src="/js/factory-tours.js"></script>
+  <script src="/js/factory-3d.js"></script>
+  <script src="/js/factory-district.js"></script>
 
   <!-- Core JavaScript -->
   <script src="/js/app.js"></script>
